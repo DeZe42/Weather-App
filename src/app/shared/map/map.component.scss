@@ -1,0 +1,13 @@
+.map-container {
+    position: absolute;
+    top: 150px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    &__map-frame {
+      height: 100%;
+    }
+}
+#map {
+    height: 100%;
+} 

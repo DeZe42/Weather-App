@@ -1,0 +1,115 @@
+@import './shared/shared.scss';
+
+.weather {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background-color: $light-mode-background;
+    font-family: 'Open Sans', sans-serif;
+    position: relative;
+    &.dark-mode {
+        background-color: $dark-mode-background;
+        .weather__header {
+            &--logo-name {
+                color: #FFF;
+            }
+            input {
+                background-color: $dark-mode-background;
+                border: 2px solid #FFF;
+                color: #FFF;
+            }
+        }
+    }
+    &__header {
+        display: flex;
+        height: 60px;
+        max-width: 1440px;
+        width: 100%;
+        margin: 0 auto;
+        &--logo {
+            height: 50px;
+            width: 50px;
+            margin: auto 0 auto 32px;
+        }
+        &--logo-name {
+            font-size: 32px;
+            line-height: 40px;
+            margin: auto 0 auto 16px;
+            font-weight: bold;
+            color: #000;
+        }
+        input {
+            padding: 12px 16px;
+            width: 300px;
+            font-size: 18px;
+            box-sizing: border-box;
+            border: 2px solid #000;
+            color: #000;
+            margin: auto 16px auto auto;
+            border-radius: 8px;
+            &:focus {
+                outline: none;
+            }
+        }
+        &--mode {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            margin: auto 32px auto 0;
+        }
+    }
+    &__content {
+        display: flex;
+        height: calc(100vh - 60px);
+        max-width: 1440px;
+        width: 100%;
+        margin: 0 auto;
+        &--container {
+            display: flex;
+            flex-direction: column;
+            .row {
+                display: flex;
+                &__img-container {
+                    width: 60px;
+                    height: 60px;
+                    margin: auto 12px auto 0;
+                    img {
+                        width: 100%;
+                    }
+                }
+                &__temp {
+                    font-size: 48px;
+                    line-height: 60px;
+                    margin: auto 12px auto 0;
+                }
+                &__temp-button {
+                    font-size: 16px;
+                    line-height: 20px;
+                    margin: 8px 0 auto 0;
+                    cursor: pointer;
+                    color: #CCC;
+                    &.active {
+                        color: #000;
+                    }
+                }
+                &__line {
+                    width: 1px;
+                    height: 16px;
+                    margin: 10px 4px auto 4px;
+                    background-color: #000;
+                }
+                &__column {
+                    display: flex;
+                    flex-direction: column;
+                    margin: auto 0 auto 12px;
+                    span {
+                        font-size: 16px;
+                        line-height: 20px;
+                        margin: 0 0 4px 0;
+                    }
+                }
+            }
+        }
+    }
+}
