@@ -1,0 +1,9 @@
+<svg #svg [attr.width]="width" [attr.height]="height">
+    <polyline fill="none" stroke="#CCC" strokeWidth="2" [attr.points]="pointsXValue"/>
+    <polyline fill="none" stroke="#CCC" strokeWidth="2" [attr.points]="pointsYValue"/>
+    <polyline id="line" fill="none" stroke="rgb(255, 123, 0)" strokeWidth="5" [attr.points]="tempValues"/>
+    <polyline *ngFor="let points of horizontalGuidePoints" fill="none" stroke="#777" strokeWidth=".5" [attr.points]="points"/>
+    <polyline *ngFor="let points of verticalGuidePoints" fill="none" stroke="#777" strokeWidth=".5" [attr.points]="points"/>
+    <text *ngFor="let element of xLabelPoints" [attr.x]="element.x" [attr.y]="element.y" [style]="{fill: '#808080', fontSize: fontSize, fontFamily: 'Helvetica'}">{{ element.label | date: 'HH:mm' }}</text>
+    <text *ngFor="let element of yLabelPoints" [attr.x]="element.x" [attr.y]="element.y" [style]="{fill: '#808080', fontSize: fontSize, fontFamily: 'Helvetica'}">{{ element.label }}</text>
+</svg>

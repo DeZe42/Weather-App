@@ -1,26 +1,53 @@
 <main class="weather" [ngClass]="{'dark-mode': darkMode}">
   <header class="weather__header">
     <img class="weather__header--logo" src="assets/images/logo.png" alt="logo">
-    <span class="weather__header--logo-name">Időjárás</span>
-    <input type="text" [formControl]="searchCtrl" placeholder="Add meg a város nevét...">
+    <span class="weather__header--logo-name">Weather</span>
+    <input type="text" [formControl]="searchCtrl" placeholder="Add meg a város nevét..." (keyup)="searchCity($event)">
     <img class="weather__header--mode" *ngIf="!darkMode" src="assets/icons/dark.png" alt="dark" (click)="putDarkMode(true)">
-    <img class="weather__header--mode" *ngIf="darkMode" src="assets/icons/light.png" alt="light" (click)="putDarkMode(false)">
+    <img class="weather__header--mode" *ngIf="darkMode" src="assets/icons/light.svg" alt="light" (click)="putDarkMode(false)">
   </header>
   <section class="weather__content">
     <article class="weather__content--container">
         <div class="row">
             <div class="row__img-container">
-                <img *ngIf="currentWeatherData?.weather[0].main == 'Clear'" src="assets/images/sunny.png" alt="sunny">
+                <img *ngIf="currentWeatherData?.weather[0].main == 'Clear'" src="assets/images/clear.png" alt="clear">
+                <img *ngIf="currentWeatherData?.weather[0].main == 'Clouds'" src="assets/images/clouds.png" alt="clouds">
+                <img *ngIf="currentWeatherData?.weather[0].main == 'Rain'" src="assets/images/rain.png" alt="rain">
             </div>
             <span class="row__temp" *ngIf="isMetric">{{ round(currentWeatherData?.main?.temp, true) }}</span>
             <span class="row__temp" *ngIf="!isMetric">{{ round(currentWeatherData?.main?.temp, false) }}</span>
             <span class="row__temp-button" [ngClass]="{'active': isMetric}" (click)="isMetric = true">ºC</span>
             <div class="row__line"></div>
             <span class="row__temp-button" [ngClass]="{'active': !   isMetric}" (click)="isMetric = false">ºF</span>
-            <div class="row__column">
-                <span>Páratartalom: {{ currentWeatherData?.main?.humidity }}%</span>
-                <span>Szél: {{ toKmh(currentWeatherData?.wind?.speed) }} km/h</span>
+            <div class="row__column start">
+                <span class="row__column--all">Humidity: {{ currentWeatherData?.main?.humidity }}%</span>
+                <span class="row__column--all">Wind: {{ toKmh(currentWeatherData?.wind?.speed) }} km/h</span>
             </div>
+            <div class="row__column margin">
+              <span class="row__column--all">Sunrise: {{ currentWeatherData?.sys?.sunrise * 1000 | date: "HH:mm" }}</span>
+              <span class="row__column--all">Sunset: {{ currentWeatherData?.sys?.sunset * 1000 | date: "HH:mm" }}</span>
+            </div>
+            <div class="row__column auto">
+              <span class="row__column--name">{{ currentWeatherData?.name }}</span>
+              <span class="row__column--all">{{ currentWeatherData?.dt * 1000 | date: 'EEEE HH:mm' }}</span>
+              <span class="row__column--all">{{ currentWeatherData?.weather[0].description }}</span>
+            </div>
+        </div>
+        <div class="chart" id="container">
+          <div *ngIf="isLoading" class="chart__spinner"></div>
+          <app-chart *ngIf="!isLoading" [data]="chartData" [width]="containerWidth" [height]="300" [precision]="0"></app-chart>
+        </div>
+        <div class="forecast">
+          <div class="forecast__card" *ngFor="let element of foreCastData" (click)="filterChartData(element.dt_txt)">
+            <span class="forecast__card--title">{{ element.dt_txt | date: 'EEEE' }}</span>
+            <div class="forecast__card--img-container">
+              <img *ngIf="element.weather[0].main == 'Clear'" src="assets/images/clear.png" alt="clear">
+              <img *ngIf="element.weather[0].main == 'Clouds'" src="assets/images/clouds.png" alt="clouds">
+              <img *ngIf="element.weather[0].main == 'Rain'" src="assets/images/rain.png" alt="rain">
+            </div>
+            <span *ngIf="isMetric">{{ round(element.main.temp, true) }}ºC</span>
+            <span *ngIf="!isMetric">{{ round(element.main.temp, false) }}ºF</span>
+          </div>
         </div>
     </article>
   </section>

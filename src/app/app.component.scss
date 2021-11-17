@@ -7,23 +7,60 @@
     height: 100vh;
     background-color: $light-mode-background;
     font-family: 'Open Sans', sans-serif;
-    position: relative;
     &.dark-mode {
         background-color: $dark-mode-background;
-        .weather__header {
-            &--logo-name {
-                color: #FFF;
+        .weather {
+            &__header {
+                &--logo-name {
+                    color: #FFF;
+                }
+                input {
+                    background-color: $dark-mode-background;
+                    border: 2px solid #FFF;
+                    color: #FFF;
+                }
             }
-            input {
-                background-color: $dark-mode-background;
-                border: 2px solid #FFF;
-                color: #FFF;
+            &__content {
+                &--container {
+                    background-color: rgba(0, 0, 0, 0.7);
+                    .row {
+                        &__temp {
+                            color: #FFF;
+                        }
+                        &__temp-button {
+                            &.active {
+                                color: #FFF;
+                            }
+                        }
+                        &__line {
+                            background-color: #FFF;
+                        }
+                        &__column {
+                            &--all {
+                                color: #FFF;
+                            }
+                            &--name {
+                                color: #FFF;
+                            }
+                        }
+                    }
+                    .forecast {
+                        span {
+                            color: #FFF;
+                        }
+                        &__card {
+                            &:hover {
+                                background-color: rgba(72, 72, 72, 0.7);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
     &__header {
         display: flex;
-        height: 60px;
+        height: 100px;
         max-width: 1440px;
         width: 100%;
         margin: 0 auto;
@@ -65,15 +102,23 @@
         max-width: 1440px;
         width: 100%;
         margin: 0 auto;
+        position: relative;
         &--container {
             display: flex;
             flex-direction: column;
+            width: 100%;
+            margin: auto 32px;
+            border-radius: 16px;
+            box-sizing: border-box;
+            padding: 32px 0;
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.7);
             .row {
                 display: flex;
                 &__img-container {
-                    width: 60px;
-                    height: 60px;
-                    margin: auto 12px auto 0;
+                    width: 64px;
+                    height: 64px;
+                    margin: auto 12px auto 32px;
                     img {
                         width: 100%;
                     }
@@ -82,11 +127,12 @@
                     font-size: 48px;
                     line-height: 60px;
                     margin: auto 12px auto 0;
+                    color: #000;
                 }
                 &__temp-button {
                     font-size: 16px;
                     line-height: 20px;
-                    margin: 8px 0 auto 0;
+                    margin: 40px 0 auto 0;
                     cursor: pointer;
                     color: #CCC;
                     &.active {
@@ -96,20 +142,94 @@
                 &__line {
                     width: 1px;
                     height: 16px;
-                    margin: 10px 4px auto 4px;
+                    margin: 42px 4px auto 4px;
                     background-color: #000;
                 }
                 &__column {
                     display: flex;
                     flex-direction: column;
-                    margin: auto 0 auto 12px;
-                    span {
+                    align-items: flex-end;
+                    margin: auto 0 auto 16px;
+                    &--all {
                         font-size: 16px;
                         line-height: 20px;
                         margin: 0 0 4px 0;
+                        color: #000;
+                        &:last-child {
+                            margin: 0;
+                        }
+                    }
+                    &--name {
+                        font-size: 48px;
+                        line-height: 60px;
+                        margin: 0 0 16px 0;
+                        color: #000;
+                    }
+                }
+                .start {
+                    align-items: flex-start;
+                }
+                .margin {
+                    align-items: flex-start;
+                    margin: auto;
+                }
+                .auto {
+                    margin: auto 32px auto auto;
+                }
+            }
+            .chart {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 24px 32px;
+                height: 300px;
+                &__spinner {
+                    border: 16px solid #f3f3f3;
+                    border-top: 16px solid #000;
+                    border-radius: 50%;
+                    width: 120px;
+                    height: 120px;
+                    animation: spin 2s linear infinite;
+                }
+            }
+            .forecast {
+                display: flex;
+                gap: 24px;
+                margin: 0 auto;
+                &__card {
+                    display: flex;
+                    flex-direction: column;
+                    box-sizing: border-box;
+                    cursor: pointer;
+                    padding: 24px;
+                    border-radius: 8px;
+                    &:hover {
+                        background-color: rgba(228, 228, 228, 0.7);
+                    }
+                    &--img-container {
+                        width: 64px;
+                        height: 64px;
+                        margin: 0 auto 16px auto;
+                        img {
+                            width: 100%;
+                        }
+                    }
+                    span {
+                        font-size: 16px;
+                        line-height: 20px;
+                        margin: 0 auto 16px auto;
+                        color: #000;
+                        &:last-child {
+                            margin: 0 auto;
+                        }
                     }
                 }
             }
         }
     }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

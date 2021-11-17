@@ -11,11 +11,18 @@ import { ApiService } from './shared/api.service';
 export class AppComponent implements OnInit, OnDestroy {
  
   currentWeatherData: any;
+  filteredCurrentWeatherData: any;
+  fullForeCastData: any;
+  foreCastData: any[] = [];
+  chartData: any[] = [];
+  containerWidth: any;
   searchCtrl: FormControl = new FormControl('', Validators.required);
   darkMode: boolean = false;
-  isMetric: boolean = false;
+  isMetric: boolean = true;
+  isLoading: boolean = false;
   ipSub: Subscription;
   weatherSub: Subscription;
+  foreCastSub: Subscription;
 
   constructor(
     private apiService: ApiService
@@ -28,15 +35,26 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.isLoading = true;
+    this.containerWidth = document.getElementById('container')?.offsetWidth;
     this.ipSub = this.apiService.getIp().subscribe((res: any) => {
       this.searchCtrl.setValue(res.city);
       this.getWeatherData(res.city);
+      this.getForeCastData(res.city);
     });
   }
 
   ngOnDestroy() {
     if (this.ipSub) this.ipSub.unsubscribe();
     if (this.weatherSub) this.weatherSub.unsubscribe();
+  }
+
+  searchCity(event) {
+    if (event.keyCode == 13 ) {
+      this.isLoading = true;
+      this.getWeatherData(this.searchCtrl.value);
+      this.getForeCastData(this.searchCtrl.value);
+    }
   }
 
   getWeatherData(cityName: string) {
@@ -46,7 +64,25 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  getForeCastData(cityName: string) {
+    this.foreCastSub = this.apiService.getWeather('forecast', cityName).subscribe((res: any) => {
+      console.log(res)
+      this.fullForeCastData = res;
+      this.chartData = [];
+      this.foreCastData = [];
+      for (let i = 0; i < 9; i++) {
+        this.chartData.push({ label: res.list[i].dt_txt, x: i, temp: res.list[i].main.temp });
+      }
+      for(let i = 0; i < res.list.length; i = i + 8) {
+        this.foreCastData.push(res.list[i]);
+      }
+      console.log(this.foreCastData)
+      this.isLoading = false;
+    });
+  }
+
   putDarkMode(mode) {
+    this.darkMode = mode;
     localStorage.setItem('darkMode', mode);
   }
 
@@ -60,5 +96,20 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toKmh(num: number) {
     return Number(num * 3.6).toFixed(0);
+  }
+
+  filterChartData(date) {
+    this.isLoading = true;
+    this.chartData = [];
+    let index = 0;
+    this.fullForeCastData.list.forEach(e => {
+      if (e.dt_txt.startsWith(date.split(' ')[0])) {
+        this.chartData.push({ label: e.dt_txt, x: index, temp: e.main.temp });
+        index ++;
+      }
+    });
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 500);
   }
 }

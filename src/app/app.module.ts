@@ -8,11 +8,13 @@ import { environment } from '../environments/environment';
 import { MapComponent } from './shared/map/map.component';
 import { HttpClientModule } from '@angular/common/http'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChartComponent } from './shared/chart/chart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MapComponent
+    MapComponent,
+    ChartComponent
   ],
   imports: [
     BrowserModule,
