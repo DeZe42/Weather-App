@@ -138,7 +138,6 @@ export class ChartComponent implements OnInit, OnChanges {
 
   getYLabels() {
     this.yLabelPoints = [];
-    console.log(this.data.length)
     for (let i = 0; i < this.numberOfVerticalGuides + 1; i++) {
       const x = this.fontSize;
       const ratio = i / this.numberOfVerticalGuides;

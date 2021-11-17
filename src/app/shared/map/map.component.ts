@@ -47,7 +47,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges {
       center: [this.lat, this.lon],
       zoom: 13
     });
-    console.log(this.map)
     this.map.doubleClickZoom.disable();
     this.map.scrollWheelZoom.disable();
     this.map.dragging.disable();
