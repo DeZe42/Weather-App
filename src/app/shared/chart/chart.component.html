@@ -5,5 +5,5 @@
     <polyline *ngFor="let points of horizontalGuidePoints" fill="none" stroke="#777" strokeWidth=".5" [attr.points]="points"/>
     <polyline *ngFor="let points of verticalGuidePoints" fill="none" stroke="#777" strokeWidth=".5" [attr.points]="points"/>
     <text *ngFor="let element of xLabelPoints" [attr.x]="element.x" [attr.y]="element.y" [style]="{fill: '#808080', fontSize: fontSize, fontFamily: 'Helvetica'}">{{ element.label | date: 'HH:mm' }}</text>
-    <text *ngFor="let element of yLabelPoints" [attr.x]="element.x" [attr.y]="element.y" [style]="{fill: '#808080', fontSize: fontSize, fontFamily: 'Helvetica'}">{{ element.label }}</text>
+    <text *ngFor="let element of yLabelPoints" [attr.x]="element.x" [attr.y]="element.y" [style]="{fill: '#808080', fontSize: fontSize, fontFamily: 'Helvetica'}">{{ round(element.label, isMetric) }}</text>
 </svg>

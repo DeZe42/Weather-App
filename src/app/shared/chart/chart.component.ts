@@ -1,4 +1,6 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-chart',
@@ -11,10 +13,14 @@ export class ChartComponent implements OnInit, OnChanges {
   @Input() width: number;
   @Input() height: number;
   @Input() precision: number;
+
+  isMetric: boolean = true;
+  isMetricSub: Subscription;
   
   fontSize;
   maximumXFromData;
   maximumYFromData;
+  minimumYFromData;
   digits;
   padding;
   chartWidth;
@@ -27,25 +33,30 @@ export class ChartComponent implements OnInit, OnChanges {
   tempValues;
 
   verticalGuidePoints: string[] = [];
-  numberOfVerticalGuides: number = 9;
+  numberOfVerticalGuides: number = 6;
   
   horizontalGuidePoints: string[] = [];
-  numberOfHorizontalGuides: number = 6;
+  numberOfHorizontalGuides: number = 9;
 
   xLabelPoints: any[] = [];
 
   yLabelPoints: any[] = [];
 
-  constructor() { }
+  constructor(
+    private apiService: ApiService
+  ) { }
 
   ngOnInit(): void {
-
+    this.isMetricSub = this.apiService.isMetric$.subscribe(data => {
+      this.isMetric = data;
+    });
   }
 
   ngOnChanges() {
     this.fontSize = null;
     this.maximumXFromData = null;
     this.maximumYFromData = null;
+    this.minimumYFromData = null;
     this.digits = null;
     this.padding = null;
     this.chartWidth = null;
@@ -65,13 +76,13 @@ export class ChartComponent implements OnInit, OnChanges {
     this.getHorizontalGuidePoints();
     this.getXLabels();
     this.getYLabels();
-    console.log(this.chartWidth)
   }
 
   calculateAttributes() {
     this.fontSize = this.width / 80;
     this.maximumXFromData = Math.max(...this.data.map((e) => e.x));
     this.maximumYFromData = Math.max(...this.data.map((e) => e.temp));
+    this.minimumYFromData = Math.max(...this.data.map((e) => e.temp));
     this.digits = parseFloat(this.maximumYFromData.toString()).toFixed(this.precision).length + 1;
     this.padding = (this.fontSize + this.digits) * 3;
     this.chartWidth = this.width - this.padding * 2;
@@ -96,10 +107,10 @@ export class ChartComponent implements OnInit, OnChanges {
 
   getVerticalGuidePoints() {
     this.verticalGuidePoints = [];
-    for(let i = 0; i < this.numberOfVerticalGuides; i++) {
+    for(let i = 0; i < this.numberOfHorizontalGuides; i++) {
       const startY = this.padding;
       const endY = this.height - this.padding;
-      const ratio = (i + 1) / this.numberOfVerticalGuides;
+      const ratio = (i + 1) / this.numberOfHorizontalGuides;
       const xCoordinate = this.padding + ratio * (this.width - this.padding * 2);
       this.verticalGuidePoints.push(`${xCoordinate}, ${startY} ${xCoordinate}, ${endY}`);
     }
@@ -107,10 +118,10 @@ export class ChartComponent implements OnInit, OnChanges {
 
   getHorizontalGuidePoints() {
     this.horizontalGuidePoints = [];
-    for(let i = 0; i < this.numberOfHorizontalGuides; i++) {
+    for(let i = 0; i < this.numberOfVerticalGuides; i++) {
       const startX = this.padding;
       const endY = this.width - this.padding;
-      const ratio = (i + 1) / this.numberOfHorizontalGuides;
+      const ratio = (i + 1) / this.numberOfVerticalGuides;
       const yCoordinate = this.chartHeight - this.chartHeight * ratio + this.padding;
       this.horizontalGuidePoints.push(`${startX}, ${yCoordinate} ${endY}, ${yCoordinate}`);
     }
@@ -118,7 +129,7 @@ export class ChartComponent implements OnInit, OnChanges {
 
   getXLabels() {
     this.xLabelPoints = [];
-    for (let i = 0; i < this.data.length; i = i + Math.round(this.data.length / this.numberOfVerticalGuides)) {
+    for (let i = 0; i < this.data.length; i = i + Math.round(this.data.length / this.numberOfHorizontalGuides)) {
       const y = this.height - this.padding + this.fontSize * 2;
       const x = (this.data[i].x / this.maximumXFromData) * this.chartWidth + this.padding - this.fontSize / 2;
       this.xLabelPoints.push({x: x, y: y, label: this.data[i].label});  
@@ -127,11 +138,20 @@ export class ChartComponent implements OnInit, OnChanges {
 
   getYLabels() {
     this.yLabelPoints = [];
-    for (let i = 0; i < this.data.length; i++) {
+    console.log(this.data.length)
+    for (let i = 0; i < this.numberOfVerticalGuides + 1; i++) {
       const x = this.fontSize;
-      const ratio = i / this.numberOfHorizontalGuides;
+      const ratio = i / this.numberOfVerticalGuides;
       const yCoordinate = this.chartHeight - this.chartHeight * ratio + this.padding + this.fontSize / 2;
-      this.yLabelPoints.push({x: x, y: yCoordinate, label: parseFloat((this.maximumYFromData * (i / this.numberOfHorizontalGuides)).toString()).toFixed(this.precision)});  
+      this.yLabelPoints.push({x: x, y: yCoordinate, label: parseFloat((this.maximumXFromData * (i / this.numberOfVerticalGuides)).toString()).toFixed(this.precision)});  
+    }
+  }
+
+  round(num: number, celsius: boolean) {
+    if (celsius) {
+      return Math.round(num) + 'ºC';
+    } else {
+      return Math.round(num * 1.8 + 32) + 'ºF';
     }
   }
 }

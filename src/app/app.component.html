@@ -9,36 +9,38 @@
   <section class="weather__content">
     <article class="weather__content--container">
         <div class="row">
-            <div class="row__img-container">
-                <img *ngIf="currentWeatherData?.weather[0].main == 'Clear'" src="assets/images/clear.png" alt="clear">
-                <img *ngIf="currentWeatherData?.weather[0].main == 'Clouds'" src="assets/images/clouds.png" alt="clouds">
-                <img *ngIf="currentWeatherData?.weather[0].main == 'Rain'" src="assets/images/rain.png" alt="rain">
+          <div class="row__column auto">
+            <span class="row__column--name">{{ filteredCurrentWeatherData?.name }}</span>
+            <span class="row__column--all">{{ filteredCurrentWeatherData?.dt * 1000 | date: 'EEEE HH:mm' }}</span>
+            <span class="row__column--all">{{ filteredCurrentWeatherData?.weather[0].description }}</span>
+          </div>
+          <div class="row__row">
+            <div class="row__row--img-container">
+                <img *ngIf="filteredCurrentWeatherData?.weather[0].main == 'Clear'" src="assets/images/clear.png" alt="clear">
+                <img *ngIf="filteredCurrentWeatherData?.weather[0].main == 'Clouds'" src="assets/images/clouds.png" alt="clouds">
+                <img *ngIf="filteredCurrentWeatherData?.weather[0].main == 'Rain'" src="assets/images/rain.png" alt="rain">
             </div>
-            <span class="row__temp" *ngIf="isMetric">{{ round(currentWeatherData?.main?.temp, true) }}</span>
-            <span class="row__temp" *ngIf="!isMetric">{{ round(currentWeatherData?.main?.temp, false) }}</span>
-            <span class="row__temp-button" [ngClass]="{'active': isMetric}" (click)="isMetric = true">ºC</span>
-            <div class="row__line"></div>
-            <span class="row__temp-button" [ngClass]="{'active': !   isMetric}" (click)="isMetric = false">ºF</span>
-            <div class="row__column start">
-                <span class="row__column--all">Humidity: {{ currentWeatherData?.main?.humidity }}%</span>
-                <span class="row__column--all">Wind: {{ toKmh(currentWeatherData?.wind?.speed) }} km/h</span>
-            </div>
-            <div class="row__column margin">
-              <span class="row__column--all">Sunrise: {{ currentWeatherData?.sys?.sunrise * 1000 | date: "HH:mm" }}</span>
-              <span class="row__column--all">Sunset: {{ currentWeatherData?.sys?.sunset * 1000 | date: "HH:mm" }}</span>
-            </div>
-            <div class="row__column auto">
-              <span class="row__column--name">{{ currentWeatherData?.name }}</span>
-              <span class="row__column--all">{{ currentWeatherData?.dt * 1000 | date: 'EEEE HH:mm' }}</span>
-              <span class="row__column--all">{{ currentWeatherData?.weather[0].description }}</span>
-            </div>
+            <span class="row__row--temp" *ngIf="isMetric">{{ round(filteredCurrentWeatherData?.main?.temp, true) }}</span>
+            <span class="row__row--temp" *ngIf="!isMetric">{{ round(filteredCurrentWeatherData?.main?.temp, false) }}</span>
+            <span class="row__row--temp-button" [ngClass]="{'active': isMetric}" (click)="changeUnits(true)">ºC</span>
+            <div class="row__row--line"></div>
+            <span class="row__row--temp-button" [ngClass]="{'active': !   isMetric}" (click)="changeUnits(false)">ºF</span>
+          </div>
+          <div class="row__column start">
+              <span class="row__column--all">Humidity: {{ filteredCurrentWeatherData?.main?.humidity }}%</span>
+              <span class="row__column--all">Wind: {{ toKmh(filteredCurrentWeatherData?.wind?.speed) }} km/h</span>
+          </div>
+          <div class="row__column margin" *ngIf="filteredCurrentWeatherData?.sys?.sunrise && filteredCurrentWeatherData?.sys?.sunset">
+            <span class="row__column--all">Sunrise: {{ filteredCurrentWeatherData?.sys?.sunrise * 1000 | date: "HH:mm" }}</span>
+            <span class="row__column--all">Sunset: {{ filteredCurrentWeatherData?.sys?.sunset * 1000 | date: "HH:mm" }}</span>
+          </div>
         </div>
         <div class="chart" id="container">
           <div *ngIf="isLoading" class="chart__spinner"></div>
           <app-chart *ngIf="!isLoading" [data]="chartData" [width]="containerWidth" [height]="300" [precision]="0"></app-chart>
         </div>
         <div class="forecast">
-          <div class="forecast__card" *ngFor="let element of foreCastData" (click)="filterChartData(element.dt_txt)">
+          <div class="forecast__card" [ngClass]="{'active': index == currentIndex}" *ngFor="let element of foreCastData; let index = index" (click)="filterChartData(element.dt_txt, index)">
             <span class="forecast__card--title">{{ element.dt_txt | date: 'EEEE' }}</span>
             <div class="forecast__card--img-container">
               <img *ngIf="element.weather[0].main == 'Clear'" src="assets/images/clear.png" alt="clear">
@@ -51,5 +53,5 @@
         </div>
     </article>
   </section>
-  <app-map [lat]="currentWeatherData?.coord?.lat" [lon]="currentWeatherData?.coord?.lon"></app-map>
+  <app-map [lat]="filteredCurrentWeatherData?.coord?.lat" [lon]="filteredCurrentWeatherData?.coord?.lon"></app-map>
 </main>

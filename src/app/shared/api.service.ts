@@ -8,6 +8,8 @@ import { environment } from 'src/environments/environment';
 })
 export class ApiService {
 
+  isMetric$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+
   constructor(
     private http: HttpClient
   ) { }

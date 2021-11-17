@@ -20,9 +20,11 @@ export class AppComponent implements OnInit, OnDestroy {
   darkMode: boolean = false;
   isMetric: boolean = true;
   isLoading: boolean = false;
+  currentIndex: number = 0;
   ipSub: Subscription;
   weatherSub: Subscription;
   foreCastSub: Subscription;
+  isMetricSub: Subscription;
 
   constructor(
     private apiService: ApiService
@@ -37,6 +39,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isLoading = true;
     this.containerWidth = document.getElementById('container')?.offsetWidth;
+    this.isMetricSub = this.apiService.isMetric$.subscribe(data => {
+      this.isMetric = data;
+    });
     this.ipSub = this.apiService.getIp().subscribe((res: any) => {
       this.searchCtrl.setValue(res.city);
       this.getWeatherData(res.city);
@@ -60,13 +65,12 @@ export class AppComponent implements OnInit, OnDestroy {
   getWeatherData(cityName: string) {
     this.weatherSub = this.apiService.getWeather('weather', cityName).subscribe(res => {
       this.currentWeatherData = res;
-      console.log(res);
+      this.filteredCurrentWeatherData = this.currentWeatherData;
     });
   }
 
   getForeCastData(cityName: string) {
     this.foreCastSub = this.apiService.getWeather('forecast', cityName).subscribe((res: any) => {
-      console.log(res)
       this.fullForeCastData = res;
       this.chartData = [];
       this.foreCastData = [];
@@ -76,7 +80,6 @@ export class AppComponent implements OnInit, OnDestroy {
       for(let i = 0; i < res.list.length; i = i + 8) {
         this.foreCastData.push(res.list[i]);
       }
-      console.log(this.foreCastData)
       this.isLoading = false;
     });
   }
@@ -98,18 +101,37 @@ export class AppComponent implements OnInit, OnDestroy {
     return Number(num * 3.6).toFixed(0);
   }
 
-  filterChartData(date) {
+  filterChartData(date, i) {
     this.isLoading = true;
     this.chartData = [];
     let index = 0;
-    this.fullForeCastData.list.forEach(e => {
-      if (e.dt_txt.startsWith(date.split(' ')[0])) {
-        this.chartData.push({ label: e.dt_txt, x: index, temp: e.main.temp });
-        index ++;
+    this.currentIndex = i;
+    if (i == 0) {
+      this.filteredCurrentWeatherData = this.currentWeatherData;
+      for (let i = 0; i < 9; i++) {
+        this.chartData.push({ label: this.fullForeCastData.list[i].dt_txt, x: i, temp: this.fullForeCastData.list[i].main.temp });
       }
-    });
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 500);
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 500);
+    } else {
+      this.fullForeCastData.list.forEach(e => {
+        if (e.dt_txt.startsWith(date.split(' ')[0])) {
+          this.chartData.push({ label: e.dt_txt, x: index, temp: e.main.temp });
+          index ++;
+        }
+        if (e.dt_txt.startsWith(date)) {
+          this.filteredCurrentWeatherData = e;
+          this.filteredCurrentWeatherData.name = this.currentWeatherData.name;
+        }
+      });
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 500);
+    }
+  }
+
+  changeUnits(mode: boolean) {
+    this.apiService.isMetric$.next(mode);
   }
 }
