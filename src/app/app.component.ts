@@ -74,7 +74,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.fullForeCastData = res;
       this.chartData = [];
       this.foreCastData = [];
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 8; i++) {
         this.chartData.push({ label: res.list[i].dt_txt, x: i, temp: res.list[i].main.temp });
       }
       for(let i = 0; i < res.list.length; i = i + 8) {

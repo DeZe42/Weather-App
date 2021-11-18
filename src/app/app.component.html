@@ -16,9 +16,7 @@
           </div>
           <div class="row__row">
             <div class="row__row--img-container">
-                <img *ngIf="filteredCurrentWeatherData?.weather[0].main == 'Clear'" src="assets/images/clear.png" alt="clear">
-                <img *ngIf="filteredCurrentWeatherData?.weather[0].main == 'Clouds'" src="assets/images/clouds.png" alt="clouds">
-                <img *ngIf="filteredCurrentWeatherData?.weather[0].main == 'Rain'" src="assets/images/rain.png" alt="rain">
+              <img *ngIf="filteredCurrentWeatherData?.weather[0].icon" [src]="'http://openweathermap.org/img/wn/' + filteredCurrentWeatherData?.weather[0].icon + '@2x.png'">
             </div>
             <span class="row__row--temp" *ngIf="isMetric">{{ round(filteredCurrentWeatherData?.main?.temp, true) }}</span>
             <span class="row__row--temp" *ngIf="!isMetric">{{ round(filteredCurrentWeatherData?.main?.temp, false) }}</span>
@@ -43,9 +41,7 @@
           <div class="forecast__card" [ngClass]="{'active': index == currentIndex}" *ngFor="let element of foreCastData; let index = index" (click)="filterChartData(element.dt_txt, index)">
             <span class="forecast__card--title">{{ element.dt_txt | date: 'EEEE' }}</span>
             <div class="forecast__card--img-container">
-              <img *ngIf="element.weather[0].main == 'Clear'" src="assets/images/clear.png" alt="clear">
-              <img *ngIf="element.weather[0].main == 'Clouds'" src="assets/images/clouds.png" alt="clouds">
-              <img *ngIf="element.weather[0].main == 'Rain'" src="assets/images/rain.png" alt="rain">
+              <img [src]="'http://openweathermap.org/img/wn/' + element?.weather[0].icon + '@2x.png'">
             </div>
             <span *ngIf="isMetric">{{ round(element.main.temp, true) }}ºC</span>
             <span *ngIf="!isMetric">{{ round(element.main.temp, false) }}ºF</span>

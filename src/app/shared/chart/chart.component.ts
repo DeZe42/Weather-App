@@ -33,7 +33,7 @@ export class ChartComponent implements OnInit, OnChanges {
   tempValues;
 
   verticalGuidePoints: string[] = [];
-  numberOfVerticalGuides: number = 6;
+  numberOfVerticalGuides: number = 7;
   
   horizontalGuidePoints: string[] = [];
   numberOfHorizontalGuides: number = 9;
@@ -82,7 +82,7 @@ export class ChartComponent implements OnInit, OnChanges {
     this.fontSize = this.width / 80;
     this.maximumXFromData = Math.max(...this.data.map((e) => e.x));
     this.maximumYFromData = Math.max(...this.data.map((e) => e.temp));
-    this.minimumYFromData = Math.max(...this.data.map((e) => e.temp));
+    this.minimumYFromData = Math.min(...this.data.map((e) => e.temp));
     this.digits = parseFloat(this.maximumYFromData.toString()).toFixed(this.precision).length + 1;
     this.padding = (this.fontSize + this.digits) * 3;
     this.chartWidth = this.width - this.padding * 2;
@@ -138,19 +138,21 @@ export class ChartComponent implements OnInit, OnChanges {
 
   getYLabels() {
     this.yLabelPoints = [];
+    let sortData = this.data.sort((a, b) => a.temp - b.temp);
     for (let i = 0; i < this.numberOfVerticalGuides + 1; i++) {
       const x = this.fontSize;
       const ratio = i / this.numberOfVerticalGuides;
       const yCoordinate = this.chartHeight - this.chartHeight * ratio + this.padding + this.fontSize / 2;
-      this.yLabelPoints.push({x: x, y: yCoordinate, label: parseFloat((this.maximumXFromData * (i / this.numberOfVerticalGuides)).toString()).toFixed(this.precision)});  
+      this.yLabelPoints.push({x: x, y: yCoordinate, label: sortData[i].temp});
     }
+
   }
 
   round(num: number, celsius: boolean) {
     if (celsius) {
-      return Math.round(num) + 'ºC';
+      return Number(num).toFixed(1);
     } else {
-      return Math.round(num * 1.8 + 32) + 'ºF';
+      return Number(num * 1.8 + 32).toFixed(0);
     }
   }
 }
